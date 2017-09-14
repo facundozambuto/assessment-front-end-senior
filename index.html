@@ -1,0 +1,436 @@
+﻿<html class=" js cssanimations js flexbox flexboxlegacy rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent js cssanimations csstransforms" lang="es" style="">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <title>Assessment Front-End</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="css/style.css">
+        <script src="js/jquery-3.2.1.min.js"></script>
+        <script src="js/angular.min.js"></script>      
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+
+
+		<div ng-app="myApp" ng-controller="MainCtrl" class="text-center">
+			<div class="container">
+				<h1 style="margin-top:4em;">Insurance Company</h1>
+			</div>
+			<div class="animationload" ng-if="loadingGif">
+				<div class="osahanloading"></div>
+			</div>
+			<div class="container" ng-if="!loadingGif">
+				<div ng-if="mostrarTabla === false && showLoginError === false" style="margin-top:4em">
+					<div class="col-md-4 col-md-offset-4">
+						<div class="login-panel panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Sign In</h3>
+							</div>
+							<div class="panel-body">
+								<form role="form" ng-submit="showContent(loginEmail)">
+									<fieldset>
+										<div class="form-group">
+											<input class="form-control" ng-model="loginEmail" placeholder="Type an user's email" name="email" type="email" autofocus="" required>
+										</div>
+										<!-- Change this to a button or input when using this as a form -->
+										<input class="btn btn-sm btn-success" type="submit" value="Submit">
+									</fieldset>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="alert alert-dismissible alert-danger" ng-if="showLoginError">
+					<h4>Oh no!</h4>
+					<p>The email which you has typed does not match with any mock's email. Please, choose another one and try again!</p>
+					<br/>
+					<input value="Try Again!" class="btn btn-sm btn-danger" type="button" ng-click="goBack();"/>
+				</div>
+				<div ng-if="mostrarTabla">
+					<h2>Clients</h2>
+					<hr>
+				    <div class="row">
+				        <div>
+				            <div class="col-md-4">
+				                <div class="form-group">
+				                    <label for="orderIdFilter">Search by Name #</label>
+				                    <input id="orderIdFilter" type="text" class="form-control order-search-box"
+				                           placeholder="Enter ID #"
+				                           ng-change="gridActions.filter()"
+				                           ng-model="name"
+				                           filter-by="name"
+				                           filter-type="text">
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+				    <hr>
+				    <div class="text-right">
+				        <button class="btn btn-default" ng-click="exportToCsv(gridOptions.data)">Export all data to CSV <i
+				                class="fa fa-download"></i></button>
+				        <button class="btn btn-default" ng-click="exportToCsv(gridOptions.grid.filtered)">Export filtered data to CSV <i
+				                class="fa fa-download"></i></button>
+				    </div>
+				    <hr>
+				    <div class="row">
+				        <div class="col-md-12">
+				            <div grid-data id='test' grid-options="gridOptions" grid-actions="gridActions">
+				                <div class="row">
+				                    <div class="col-md-3">
+				                        <span class="items">{{filtered.length}} items total</span>
+				                    </div>
+				                    <div class="col-md-9 text-right">
+				                        <form class="form-inline pull-right margin-bottom-basic">
+				                            <div class="form-group">
+				                                <grid-pagination max-size="5"
+				                                                 boundary-links="true"
+				                                                 class="pagination-sm"
+				                                                 total-items="paginationOptions.totalItems"
+				                                                 ng-model="paginationOptions.currentPage"
+				                                                 ng-change="reloadGrid()"
+				                                                 items-per-page="10"></grid-pagination>
+				                            </div>
+				                            <div class="form-group items-per-page">
+				                                <label for="itemsOnPageSelect1">Items per page:</label>
+				                                <select id="itemsOnPageSelect1" class="form-control input-sm"
+				                                        ng-init="paginationOptions.itemsPerPage = '10'"
+				                                        ng-model="paginationOptions.itemsPerPage" ng-change="reloadGrid()">
+				                                    <option>10</option>
+				                                    <option>25</option>
+				                                    <option>50</option>
+				                                    <option>75</option>
+				                                </select>
+				                            </div>
+				                        </form>
+				                    </div>
+				                </div>
+				                <table class="table table-bordered table-striped">
+				                    <thead>
+				                    <tr>
+				                        <th sortable="id" class="sortable">
+				                            ID
+				                        </th>
+				                        <th sortable="name" class="sortable">
+				                            Name
+				                        </th>
+				                        <th sortable='email' class="sortable">
+				                            Email
+				                        </th>
+				                        <th class="st-sort-disable th-dropdown">
+				                            <select class="form-control width-15"
+				                                    filter-by="role"
+				                                    filter-type="select"
+				                                    ng-model="roles"
+				                                    ng-change="filter()">
+				                                <option value="">All roles</option>
+				                                <option ng-repeat="option in roleOptions track by option.value"
+				                                        value="{{option.value}}">{{option.text}}
+				                                </option>
+				                            </select>
+				                        </th>
+				                    </tr>
+				                    </thead>
+				                    <tbody>
+				                    <tr grid-item class="bg-success" ng-click="openPoliciesModal(item.id)">
+				                        <td width="30%" ng-bind="item.id"></td>
+				                        <td width="30%" ng-bind="item.name"></td>
+				                        <td ng-bind="item.email"></td>
+				                        <td ng-bind="item.role"></td>
+				                    </tr>
+				                    </tbody>
+				                </table>
+				                <form class="form-inline pull-right margin-bottom-basic">
+				                    <div class="form-group">
+				                        <grid-pagination max-size="5"
+				                                         boundary-links="true"
+				                                         class="pagination-sm"
+				                                         total-items="paginationOptions.totalItems"
+				                                         ng-model="paginationOptions.currentPage"
+				                                         ng-change="reloadGrid()"
+				                                         items-per-page="10"></grid-pagination>
+				                    </div>
+				                    <div class="form-group items-per-page">
+				                        <label for="itemsOnPageSelect2">Items per page:</label>
+				                        <select id="itemsOnPageSelect2" class="form-control input-sm"
+				                                ng-init="paginationOptions.itemsPerPage = '10'"
+				                                ng-model="paginationOptions.itemsPerPage" ng-change="reloadGrid()">
+				                            <option>10</option>
+				                            <option>25</option>
+				                            <option>50</option>
+				                            <option>75</option>
+				                        </select>
+				                    </div>
+				                </form>
+				            </div>
+				        </div>
+				    </div>
+					<h2>Policies</h2>
+					<hr>
+				    <div class="row">
+				        <div>
+				            <div class="col-md-4">
+				                <div class="form-group">
+				                    <label for="orderIdFilter">Search by Client ID #</label>
+				                    <input id="orderIdFilter" type="text" class="form-control order-search-box"
+				                           placeholder="Enter Client ID #"
+				                           ng-change="gridActions.filter()"
+				                           ng-model="clientId"
+				                           filter-by="clientId"
+				                           filter-type="text">
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+				    <hr>
+				    <div class="text-right">
+				        <button class="btn btn-default" ng-click="exportToCsv(gridOptions.data)">Export all data to CSV <i
+				                class="fa fa-download"></i></button>
+				        <button class="btn btn-default" ng-click="exportToCsv(gridOptions.grid.filtered)">Export filtered data to CSV <i
+				                class="fa fa-download"></i></button>
+				    </div>
+				    <hr>
+				    <div class="row">
+				        <div class="col-md-12">
+				            <div grid-data id='gridPolicies' grid-options="gridOptions2" grid-actions="gridActions2">
+				                <div class="row">
+				                    <div class="col-md-3">
+				                        <span class="items">{{filtered.length}} items total</span>
+				                    </div>
+				                    <div class="col-md-9 text-right">
+				                        <form class="form-inline pull-right margin-bottom-basic">
+				                            <div class="form-group">
+				                                <grid-pagination max-size="5"
+				                                                 boundary-links="true"
+				                                                 class="pagination-sm"
+				                                                 total-items="paginationOptions.totalItems"
+				                                                 ng-model="paginationOptions.currentPage"
+				                                                 ng-change="reloadGrid()"
+				                                                 items-per-page="paginationOptions.itemsPerPage"></grid-pagination>
+				                            </div>
+				                            <div class="form-group items-per-page">
+				                                <label for="itemsOnPageSelect1">Items per page:</label>
+				                                <select id="itemsOnPageSelect1" class="form-control input-sm"
+				                                        ng-init="paginationOptions.itemsPerPage = '10'"
+				                                        ng-model="paginationOptions.itemsPerPage" ng-change="reloadGrid()">
+				                                    <option>10</option>
+				                                    <option>25</option>
+				                                    <option>50</option>
+				                                    <option>75</option>
+				                                </select>
+				                            </div>
+				                        </form>
+				                    </div>
+				                </div>
+				                <table class="table table-bordered table-striped">
+				                    <thead>
+				                    <tr>
+				                        <th sortable="id" class="sortable">
+				                            ID
+				                        </th>
+				                        <th sortable="amountInsured" class="sortable">
+				                            Amount Insured
+				                        </th>
+				                        <th sortable='inceptionDate' class="sortable">
+				                            Inception Date
+				                        </th>
+										<th sortable='email' class="sortable">
+				                            Email
+				                        </th>
+				                        <th class="st-sort-disable th-dropdown">
+				                            <select class="form-control width-15"
+				                                    filter-by="installmentPayment"
+				                                    filter-type="select"
+				                                    ng-model="installmentPayments"
+				                                    ng-change="filter()">
+				                                <option value="">All Payments</option>
+				                                <option ng-repeat="option in installmentPaymentOptions track by option.value"
+				                                        value="{{option.value}}">{{option.text}}
+				                                </option>
+				                            </select>
+				                        </th>
+										<th sortable='clientId' class="sortable">
+				                            Client ID
+				                        </th>
+				                    </tr>
+				                    </thead>
+				                    <tbody>
+				                    <tr grid-item class="bg-warning">
+				                        <td width="30%" ng-bind="item.id"></td>
+				                        <td width="5%" ng-bind="item.amountInsured | currency"></td>
+				                        <td ng-bind="item.email"></td>
+				                        <td width="10%" ng-bind="item.inceptionDate | date:'dd/MM/yyyy'"></td>
+										<td width="10%" ng-bind="item.installmentPayment"></td>
+										<td width="30%" ng-bind="item.clientId"></td>
+				                    </tr>
+				                    </tbody>
+				                </table>
+				                <form class="form-inline pull-right margin-bottom-basic">
+				                    <div class="form-group">
+				                        <grid-pagination max-size="5"
+				                                         boundary-links="true"
+				                                         class="pagination-sm"
+				                                         total-items="paginationOptions.totalItems"
+				                                         ng-model="paginationOptions.currentPage"
+				                                         ng-change="reloadGrid()"
+				                                         items-per-page="paginationOptions.itemsPerPage"></grid-pagination>
+				                    </div>
+				                    <div class="form-group items-per-page">
+				                        <label for="itemsOnPageSelect2">Items per page:</label>
+				                        <select id="itemsOnPageSelect2" class="form-control input-sm"
+				                                ng-init="paginationOptions.itemsPerPage = '10'"
+				                                ng-model="paginationOptions.itemsPerPage" ng-change="reloadGrid()">
+				                            <option>10</option>
+				                            <option>25</option>
+				                            <option>50</option>
+				                            <option>75</option>
+				                        </select>
+				                    </div>
+				                </form>
+				            </div>
+				        </div>
+				    </div>
+					<div id="policiesModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" style="display: none;">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h4 class="modal-title" id="mySmallModalLabel">Client {{currentClientId}} 's policies</h4>
+								</div>
+								<div class="modal-body">
+									<div class="animationload" ng-if="loadingGifModal">
+										<div class="osahanloading"></div>
+									</div>
+									<div class="row" ng-show="!hasPolicies && !loadingGifModal">
+										<div class="alert alert-dismissible alert-warning">
+										  <h4>We're sorry</h4>
+										  <p>There is any policy for the selected client Id. Please, try again (click on Britney ;) )</p>
+										</div>
+									</div>
+									<div class="row" ng-show="hasPolicies && !loadingGifModal">
+										<div class="col-md-12">
+											<div grid-data id='gridPoliciesByClient' grid-options="gridOptions3" grid-actions="gridActions3">
+												<div class="row">
+													<div class="col-md-3">
+														<span class="items">{{filtered.length}} items total</span>
+													</div>
+													<div class="col-md-9 text-right">
+														<form class="form-inline pull-right margin-bottom-basic">
+															<div class="form-group">
+																<grid-pagination max-size="5"
+																				 boundary-links="true"
+																				 class="pagination-sm"
+																				 total-items="paginationOptions.totalItems"
+																				 ng-model="paginationOptions.currentPage"
+																				 ng-change="reloadGrid()"
+																				 items-per-page="paginationOptions.itemsPerPage"></grid-pagination>
+															</div>
+															<div class="form-group items-per-page">
+																<label for="itemsOnPageSelect1">Items per page:</label>
+																<select id="itemsOnPageSelect1" class="form-control input-sm"
+																		ng-init="paginationOptions.itemsPerPage = '10'"
+																		ng-model="paginationOptions.itemsPerPage" ng-change="reloadGrid()">
+																	<option>10</option>
+																	<option>25</option>
+																	<option>50</option>
+																	<option>75</option>
+																</select>
+															</div>
+														</form>
+													</div>
+												</div>
+												<table class="table table-bordered table-striped">
+													<thead>
+													<tr>
+														<th sortable="id" class="sortable">
+															ID
+														</th>
+														<th sortable="amountInsured" class="sortable">
+															Amount Insured
+														</th>
+														<th sortable='inceptionDate' class="sortable">
+															Inception Date
+														</th>
+														<th sortable='email' class="sortable">
+															Email
+														</th>
+														<th class="st-sort-disable th-dropdown">
+															<select class="form-control width-15"
+																	filter-by="installmentPayment"
+																	filter-type="select"
+																	ng-model="installmentPayments"
+																	ng-change="filter()">
+																<option value="">All Payments</option>
+																<option ng-repeat="option in installmentPaymentOptions track by option.value"
+																		value="{{option.value}}">{{option.text}}
+																</option>
+															</select>
+														</th>
+													</tr>
+													</thead>
+													<tbody>
+													<tr grid-item class="bg-danger">													
+														<td width="30%" ng-bind="item.id"></td>
+														<td width="15%" ng-bind="item.amountInsured | currency"></td>
+														<td ng-bind="item.email"></td>
+														<td width="10%" ng-bind="item.inceptionDate | date:'dd/MM/yyyy'"></td>
+														<td width="10%" ng-bind="item.installmentPayment"></td>
+													</tr>
+													</tbody>
+												</table>
+												<form class="form-inline pull-right margin-bottom-basic">
+													<div class="form-group">
+														<grid-pagination max-size="5"
+																		 boundary-links="true"
+																		 class="pagination-sm"
+																		 total-items="paginationOptions.totalItems"
+																		 ng-model="paginationOptions.currentPage"
+																		 ng-change="reloadGrid()"
+																		 items-per-page="paginationOptions.itemsPerPage"></grid-pagination>
+													</div>
+													<div class="form-group items-per-page">
+														<label for="itemsOnPageSelect2">Items per page:</label>
+														<select id="itemsOnPageSelect2" class="form-control input-sm"
+																ng-init="paginationOptions.itemsPerPage = '10'"
+																ng-model="paginationOptions.itemsPerPage" ng-change="reloadGrid()">
+															<option>10</option>
+															<option>25</option>
+															<option>50</option>
+															<option>75</option>
+														</select>
+													</div>
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button id="btnCancelDelete" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+									<button id="btnConfirmDelete" type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+								</div>
+							</div><!-- /.modal-content -->
+						</div><!-- /.modal-dialog -->
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<script src="js/app.js"></script>
+		<script src="js/insuranceService.js"></script>
+		<script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.14.3.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+		<script src="https://angular-data-grid.github.io/dist/pagination.js"></script>
+		<script src="https://angular-data-grid.github.io/dist/JSONToCSVConvertor.js"></script>
+		<script src="https://angular-data-grid.github.io/dist/dataGrid.js"></script>
+	</body>
+</html>
+
+
+
+
+
